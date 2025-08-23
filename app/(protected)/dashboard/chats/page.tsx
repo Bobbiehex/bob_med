@@ -6,11 +6,13 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { MessageCircle, Send } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { useChat } from "@/context/ChatContext"; // ✅ import ChatContext
 
 export default function ChatPage() {
+  const { chatHistory, addMessage, setMessages } = useChat(); // ✅ use context
+
   const [selectedStaff, setSelectedStaff] = useState<any>(null);
   const [message, setMessage] = useState("");
-  const [chatHistory, setChatHistory] = useState<{ [key: string]: { from: string; text: string }[] }>({});
   const [isTyping, setIsTyping] = useState(false);
 
   // Replace this with your logged-in user ID
@@ -22,16 +24,13 @@ export default function ChatPage() {
     { id: "nurse1", name: "Nurse Grace Adebayo", img: "https://randomuser.me/api/portraits/women/33.jpg" },
   ];
 
-  // Fetch messages from backend
+  // Fetch messages from backend and update context
   const fetchMessages = async (staffId: string) => {
     try {
       const res = await fetch(`/api/messages?staffId=${staffId}&userId=${loggedInUserId}`);
       if (!res.ok) throw new Error("Failed to fetch messages");
       const data = await res.json();
-      setChatHistory((prev) => ({
-        ...prev,
-        [staffId]: data.map((msg: any) => ({ from: msg.from, text: msg.text })),
-      }));
+      setMessages(staffId, data); // ✅ update context
     } catch (err) {
       console.error(err);
     }
@@ -43,7 +42,7 @@ export default function ChatPage() {
     fetchMessages(selectedStaff.id); // initial fetch
     const interval = setInterval(() => fetchMessages(selectedStaff.id), 2000);
     return () => clearInterval(interval);
-  }, [selectedStaff]);
+  }, [selectedStaff, setMessages]);
 
   // Send message
   const handleSendMessage = async () => {
@@ -53,10 +52,8 @@ export default function ChatPage() {
     setMessage("");
     setIsTyping(true);
 
-    setChatHistory((prev) => ({
-      ...prev,
-      [selectedStaff.id]: [...(prev[selectedStaff.id] || []), { from: "You", text: textToSend }],
-    }));
+    // ✅ optimistically update context
+    addMessage(selectedStaff.id, { staffId: selectedStaff.id, from: "You", text: textToSend });
 
     try {
       const res = await fetch("/api/messages", {
@@ -70,6 +67,10 @@ export default function ChatPage() {
         }),
       });
       if (!res.ok) console.error("Failed to save message to database");
+      else {
+        const savedMessage = await res.json();
+        addMessage(selectedStaff.id, savedMessage); // ✅ ensure context has saved message
+      }
     } catch (err) {
       console.error(err);
     } finally {

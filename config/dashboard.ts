@@ -18,6 +18,8 @@ export const sidebarLinks: SidebarNavItem[] = [
       { href: "/dashboard/appointments", icon: "calendar", title: "Appointments" },
       { href: "/dashboard/chats", icon: "messages", title: "Chats" },
       { href: "/dashboard/staffs", icon: "users", title: "Staffs" },
+      { href: "/dashboard/pharmacy", icon: "store", title: "Pharmacy" },
+
 
       // { href: "/dashboard/charts", 
       //   icon: "lineChart", 

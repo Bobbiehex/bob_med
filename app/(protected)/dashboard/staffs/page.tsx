@@ -23,10 +23,9 @@ export default function StaffPage() {
   const [bookingTime, setBookingTime] = useState("")
   const [bookingReason, setBookingReason] = useState("")
 
-  // ✅ from ChatContext instead of local chatHistory
-  const { messages, addMessage, setMessages } = useChat()
+  // ✅ from ChatContext
+  const { chatHistory, addMessage, setMessages } = useChat()
 
-  // Replace this with actual logged-in user ID from session/auth
   const loggedInUserId = "replace_with_actual_user_id"
 
   const doctors = [
@@ -47,14 +46,14 @@ export default function StaffPage() {
     { id: "nurse7", name: "Nurse Sophia Adeyemi", role: "Community Health Nurse", img: "https://randomuser.me/api/portraits/women/20.jpg" },
   ]
 
-  // ✅ Fetch messages for a staff and sync with context
+  // ✅ Fetch messages safely
   const fetchMessages = async (staffId: string) => {
     try {
       const res = await fetch(`/api/messages?staffId=${staffId}&userId=${loggedInUserId}`)
       if (!res.ok) return
       const data = await res.json()
       if (!Array.isArray(data)) return
-      setMessages(staffId, data) // ✅ use context
+      setMessages(staffId, data)
     } catch (err) {
       console.error("Failed to fetch messages:", err)
     }
@@ -77,14 +76,13 @@ export default function StaffPage() {
     return () => clearInterval(interval)
   }, [selectedStaff])
 
-  // ✅ Send message and update context
   const handleSendMessage = async () => {
     if (!message.trim() || !selectedStaff) return
     setIsTyping(true)
     const textToSend = message
     setMessage("")
 
-    // Optimistically update context
+    // ✅ Optimistic update in context
     addMessage(selectedStaff.id, { staffId: selectedStaff.id, from: "You", text: textToSend })
 
     try {
@@ -101,7 +99,6 @@ export default function StaffPage() {
       if (!res.ok) console.error("Failed to save message to database")
       else {
         const savedMessage = await res.json()
-        // Ensure context has the saved message (with createdAt)
         addMessage(selectedStaff.id, savedMessage)
       }
     } catch (err) {
@@ -111,7 +108,7 @@ export default function StaffPage() {
     }
   }
 
-  // --- Booking stuff remains untouched ---
+  // --- Booking code remains unchanged ---
   const fetchExistingBookings = async (staffId: string) => {
     try {
       const res = await fetch(`/api/bookings?staffId=${staffId}`)
@@ -228,8 +225,8 @@ export default function StaffPage() {
             <DialogTitle>Chat with {selectedStaff?.name}</DialogTitle>
           </DialogHeader>
           <div className="flex-1 overflow-y-auto max-h-60 border rounded-lg p-3 mb-3 bg-gray-50">
-            {selectedStaff && messages[selectedStaff.id]?.length ? (
-              messages[selectedStaff.id].map((msg, idx) => (
+            {selectedStaff ? (
+              (chatHistory[selectedStaff.id] || []).map((msg, idx) => (
                 <div key={idx} className={`mb-2 ${msg.from === "You" ? "text-right" : "text-left"}`}>
                   <span
                     className={`inline-block px-3 py-1 rounded-xl ${

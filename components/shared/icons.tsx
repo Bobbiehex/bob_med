@@ -7,6 +7,7 @@ import {
   BarChart,
   RefreshCw,
   Users,
+  Store,
   Bot,
   Check,
   ChevronLeft,
@@ -125,4 +126,5 @@ export const Icons = {
   refreshCw: RefreshCw,
   users: Users,
   bot: Bot,
+  store: Store
 };
