@@ -1,25 +1,3 @@
-<a href="https://next-auth-roles-template.vercel.app">
-  <img alt="Next Template" src="public/_static/og.jpg">
-  <h1 align="center">Next Auth Roles Template</h1>
-</a>
-
-<p align="center">
-  Start at full speed with this Next.js Template !
-</p>
-
-<p align="center">
-  <a href="https://twitter.com/miickasmt">
-    <img src="https://img.shields.io/twitter/follow/miickasmt?style=flat&label=miickasmt&logo=twitter&color=0bf&logoColor=fff" alt="Mickasmt Twitter follower count" />
-  </a>
-</p>
-
-<p align="center">
-  <a href="#installation"><strong>Installation</strong></a> ·
-  <a href="#tech-stack--features"><strong>Tech Stack + Features</strong></a> ·
-  <a href="#author"><strong>Author</strong></a>
-</p>
-<br/>
-
 ## Installation
 
 Clone & create this repo locally with the following command:
