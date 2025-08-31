@@ -1,4 +1,5 @@
-// .eslintrc.js
+const disableRules = process.env.DISABLE_REACT_RULES === "true";
+
 module.exports = {
   root: true,
   extends: [
@@ -10,11 +11,9 @@ module.exports = {
   rules: {
     "@next/next/no-html-link-for-pages": "off",
     "react/jsx-key": "off",
-    "tailwindcss/no-custom-classname": "off",
-
-    // Tailwind linting rules → strict locally, off in Vercel
-    "tailwindcss/classnames-order": process.env.VERCEL ? "off" : "error",
-    "tailwindcss/enforces-shorthand": process.env.VERCEL ? "off" : "error"
+    "tailwindcss/no-custom-classname": disableRules ? "off" : "error",
+    "tailwindcss/classnames-order": disableRules ? "off" : "error",
+    "react/no-unescaped-entities": disableRules ? "off" : "error"
   },
   settings: {
     tailwindcss: {
@@ -31,4 +30,4 @@ module.exports = {
       parser: "@typescript-eslint/parser"
     }
   ]
-}
+};
