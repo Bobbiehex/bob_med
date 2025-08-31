@@ -1,22 +1,19 @@
 import { UserRole } from "@prisma/client";
-import NextAuth from "next-auth";
+import { User } from "next-auth";
+import { JWT } from "next-auth/jwt";
 
-export type ExtendedUser = NextAuth.User & {
-  role: UserRole; // Adds Prisma role to User
+export type ExtendedUser = User & {
+  role: UserRole;
 };
-
-declare module "next-auth/jwt" {
-  interface JWT {
-    role: UserRole; // JWT will carry the user's role
-  }
-}
 
 declare module "next-auth" {
   interface Session {
-    user: ExtendedUser; // session.user now has role
+    user: ExtendedUser;
   }
+}
 
-  interface User {
-    role: UserRole; // Include role on the User object
+declare module "next-auth/jwt" {
+  interface JWT {
+    role: UserRole;
   }
 }
