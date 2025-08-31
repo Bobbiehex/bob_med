@@ -1,4 +1,4 @@
-import type { Config } from "tailwindcss";
+import type { Config } from "tailwindcss"
 
 const { fontFamily } = require("tailwindcss/defaultTheme");
 
@@ -61,9 +61,8 @@ const config = {
         sm: "calc(var(--radius) - 4px)",
       },
       fontFamily: {
-        sans: ["var(--font-sans)", ...fontFamily.sans],
-        heading: ["var(--font-heading)", ...fontFamily.sans],
-        satoshi: ["var(--font-satoshi)", ...fontFamily.sans],
+        // ✅ reset to Tailwind’s default system font stack
+        sans: [...fontFamily.sans],
       },
       keyframes: {
         "accordion-down": {
