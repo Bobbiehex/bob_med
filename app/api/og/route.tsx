@@ -2,7 +2,8 @@ import { ImageResponse } from "@vercel/og";
 import { ogImageSchema } from "@/lib/validations/og";
 import { auth } from "@/auth";
 
-export const runtime = "edge"; // Edge runtime required by @vercel/og
+export const runtime = "nodejs"; // instead of "edge"
+
 
 const interRegularPromise = fetch(
   new URL("../../../assets/fonts/Inter-Regular.ttf", import.meta.url)
