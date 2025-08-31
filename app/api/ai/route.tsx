@@ -9,10 +9,9 @@ const pool = new Pool({
 
 export async function POST(req: Request) {
   try {
-    // Authenticate inside the handler
     const session = await auth();
     if (!session?.user?.id) {
-      return new NextResponse("Unauthorized", { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     if (!process.env.GEMINI_API_KEY) {
@@ -20,7 +19,7 @@ export async function POST(req: Request) {
     }
 
     const { user_id, messages } = await req.json();
-    const userId = user_id ?? session.user.id ?? "guest";
+    const userId = user_id ?? "guest";
 
     const { rows: memory } = await pool.query(
       `SELECT role, message 
@@ -35,9 +34,7 @@ export async function POST(req: Request) {
       .map((m) => `${m.role === "user" ? "You" : "AI"}: ${m.message}`)
       .join("\n");
 
-    const newInput = messages
-      .map((m: any) => `You: ${m.text}`)
-      .join("\n");
+    const newInput = messages.map((m: any) => `You: ${m.text}`).join("\n");
 
     const systemPrompt = `
 You are a friendly AI hospital assistant.
@@ -57,13 +54,13 @@ Respond in a natural, easy-to-read style using paragraphs and numbered/bulleted 
 
     aiResponse = aiResponse.replace(/\*\*/g, "").trim();
 
+    // Save messages to DB
     for (const msg of messages) {
       await pool.query(
         `INSERT INTO ai_memory (user_id, role, message) VALUES ($1, 'user', $2)`,
         [userId, msg.text]
       );
     }
-
     await pool.query(
       `INSERT INTO ai_memory (user_id, role, message) VALUES ($1, 'assistant', $2)`,
       [userId, aiResponse]

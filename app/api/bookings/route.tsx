@@ -1,13 +1,12 @@
-// app/api/bookings/route.ts
-import { prisma } from "@/lib/db";
 import { NextResponse } from "next/server";
+import { prisma } from "@/lib/db";
 import { auth } from "@/auth";
 
 type BookingRequestBody = {
   staffId: string;
   staffName: string;
-  date: string; // ISO string
-  time: string; // e.g., "10:00"
+  date: string;
+  time: string;
   reason: string;
 };
 
@@ -20,10 +19,7 @@ export async function GET(req: Request) {
 
     const { searchParams } = new URL(req.url);
     const staffId = searchParams.get("staffId");
-
-    if (!staffId) {
-      return NextResponse.json({ error: "Missing staffId" }, { status: 400 });
-    }
+    if (!staffId) return NextResponse.json({ error: "Missing staffId" }, { status: 400 });
 
     const bookings = await prisma.booking.findMany({
       where: { staffId },
@@ -43,12 +39,9 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   try {
     const session = await auth();
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     const body: BookingRequestBody = await req.json();
-
     const { staffId, staffName, date, time, reason } = body;
 
     if (!staffId || !staffName || !date || !time || !reason) {
@@ -60,20 +53,11 @@ export async function POST(req: Request) {
     });
 
     if (existingBooking) {
-      return NextResponse.json(
-        { error: "This slot is already booked. Please choose another time." },
-        { status: 409 }
-      );
+      return NextResponse.json({ error: "This slot is already booked." }, { status: 409 });
     }
 
     const newBooking = await prisma.booking.create({
-      data: {
-        staffId,
-        staffName,
-        date: new Date(date),
-        time,
-        reason,
-      },
+      data: { staffId, staffName, date: new Date(date), time, reason },
     });
 
     return NextResponse.json(newBooking, { status: 201 });
