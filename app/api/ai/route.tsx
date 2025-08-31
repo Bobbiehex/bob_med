@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { Pool } from "@neondatabase/serverless";
+import { auth } from "@/auth";
+const session = await auth();
+
 
 // ❌ remove this
 // export const runtime = "edge";

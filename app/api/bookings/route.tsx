@@ -1,6 +1,9 @@
 // app/api/bookings/route.ts
 import { prisma } from "@/lib/db";
 import { NextResponse } from "next/server";
+import { auth } from "@/auth";
+const session = await auth();
+
 
 export async function GET(req: Request) {
   try {

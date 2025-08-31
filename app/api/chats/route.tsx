@@ -1,13 +1,11 @@
 // app/api/chats/route.ts
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import  getServerSession  from "next-auth";
-
-
+import { auth } from "@/auth"; // ✅ make sure you import from your auth.ts
 
 export async function GET() {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await auth();
 
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -19,8 +17,8 @@ export async function GET() {
       orderBy: { createdAt: "desc" },
     });
 
-    // Extract unique staffIds from messages
-    const staffIds = [...new Set(messages.map((msg) => msg.staffId))];
+    // ✅ Use Array.from instead of spread
+    const staffIds = Array.from(new Set(messages.map((msg) => msg.staffId)));
 
     const staffs = await prisma.user.findMany({
       where: { id: { in: staffIds } },
@@ -36,6 +34,9 @@ export async function GET() {
     return NextResponse.json({ staffs, messages });
   } catch (error) {
     console.error("Chats fetch error:", error);
-    return NextResponse.json({ error: "Failed to fetch chats" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to fetch chats" },
+      { status: 500 }
+    );
   }
 }

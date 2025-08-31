@@ -1,6 +1,9 @@
 import { ImageResponse } from "@vercel/og"
 
 import { ogImageSchema } from "@/lib/validations/og"
+import { auth } from "@/auth";
+const session = await auth();
+
 
 export const runtime = "edge"
 

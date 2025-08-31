@@ -1,6 +1,9 @@
 // app/api/messages/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { auth } from "@/auth";
+const session = await auth();
+
 
 export async function GET(req: NextRequest) {
   try {

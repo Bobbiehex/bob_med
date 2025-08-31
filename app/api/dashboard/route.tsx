@@ -1,4 +1,7 @@
 import { NextResponse } from "next/server";
+import { auth } from "@/auth";
+const session = await auth();
+
 
 export async function GET() {
   return NextResponse.json({
