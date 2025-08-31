@@ -1,7 +1,10 @@
+// app/api/ai/route.ts
 import { NextResponse } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { Pool } from "@neondatabase/serverless";
 import { auth } from "@/auth";
+
+export const runtime = "nodejs"; // ✅ Force Node runtime
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
@@ -9,9 +12,10 @@ const pool = new Pool({
 
 export async function POST(req: Request) {
   try {
+    // Move auth inside the handler
     const session = await auth();
     if (!session?.user?.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return new NextResponse("Unauthorized", { status: 401 });
     }
 
     if (!process.env.GEMINI_API_KEY) {
@@ -19,8 +23,9 @@ export async function POST(req: Request) {
     }
 
     const { user_id, messages } = await req.json();
-    const userId = user_id ?? "guest";
+    const userId = user_id ?? session.user.id ?? "guest";
 
+    // Fetch previous conversation memory
     const { rows: memory } = await pool.query(
       `SELECT role, message 
        FROM ai_memory 
@@ -47,14 +52,14 @@ Respond in a natural, easy-to-read style using paragraphs and numbered/bulleted 
 
     const prompt = `${systemPrompt}\n\n${history}\n${newInput}`;
 
+    // Use Node runtime to call Google Generative AI
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
     const result = await model.generateContent(prompt);
     let aiResponse = result.response.text();
-
     aiResponse = aiResponse.replace(/\*\*/g, "").trim();
 
-    // Save messages to DB
+    // Save messages to Neon
     for (const msg of messages) {
       await pool.query(
         `INSERT INTO ai_memory (user_id, role, message) VALUES ($1, 'user', $2)`,
