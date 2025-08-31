@@ -2,11 +2,6 @@ import { NextResponse } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { Pool } from "@neondatabase/serverless";
 import { auth } from "@/auth";
-const session = await auth();
-
-
-// ❌ remove this
-// export const runtime = "edge";
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
@@ -14,12 +9,18 @@ const pool = new Pool({
 
 export async function POST(req: Request) {
   try {
+    // Authenticate inside the handler
+    const session = await auth();
+    if (!session?.user?.id) {
+      return new NextResponse("Unauthorized", { status: 401 });
+    }
+
     if (!process.env.GEMINI_API_KEY) {
       return new NextResponse("Missing GEMINI_API_KEY", { status: 500 });
     }
 
     const { user_id, messages } = await req.json();
-    const userId = user_id ?? "guest";
+    const userId = user_id ?? session.user.id ?? "guest";
 
     const { rows: memory } = await pool.query(
       `SELECT role, message 
@@ -49,7 +50,6 @@ Respond in a natural, easy-to-read style using paragraphs and numbered/bulleted 
 
     const prompt = `${systemPrompt}\n\n${history}\n${newInput}`;
 
-    // ✅ Node runtime will allow this to work
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
     const result = await model.generateContent(prompt);
