@@ -1,10 +1,11 @@
 {
   "compilerOptions": {
-    "target": "es2017", 
+    "target": "es2017",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
+    "strictNullChecks": true,
     "forceConsistentCasingInFileNames": true,
     "noEmit": true,
     "esModuleInterop": true,
@@ -16,15 +17,9 @@
     "incremental": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./*"],
-      "contentlayer/generated": ["./.contentlayer/generated"]
+      "@/*": ["./*"]
     },
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ],
-    "strictNullChecks": true,
+    "typeRoots": ["./node_modules/@types", "./types"],
     "downlevelIteration": true
   },
   "include": [
@@ -33,7 +28,8 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     ".contentlayer/generated",
-    "contentlayer.config.ts"
+    "contentlayer.config.ts",
+    "types/**/*.d.ts"
   ],
   "exclude": ["node_modules"]
 }
