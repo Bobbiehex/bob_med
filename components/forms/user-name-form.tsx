@@ -21,11 +21,11 @@ interface UserNameFormProps {
 
 export function UserNameForm({ user }: UserNameFormProps) {
   const { update } = useSession();
-  const [updated, setUpdated] = useState(false);
+  const [updated, setUpdated] = useState<boolean>(false);
   const [isPending, startTransition] = useTransition();
   const updateUserNameWithId = updateUserName.bind(null, user.id);
 
-  const checkUpdate = (value) => {
+  const checkUpdate = (value: string) => {
     setUpdated(user.name !== value);
   };
 
@@ -40,7 +40,7 @@ export function UserNameForm({ user }: UserNameFormProps) {
     },
   });
 
-  const onSubmit = handleSubmit((data) => {
+  const onSubmit = handleSubmit((data: FormData) => {
     startTransition(async () => {
       const { status } = await updateUserNameWithId(data);
 
