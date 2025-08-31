@@ -2,11 +2,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { auth } from "@/auth";
-const session = await auth();
-
 
 export async function GET(req: NextRequest) {
   try {
+    const session = await auth(); // move inside function
+
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const { searchParams } = new URL(req.url);
     const staffId = searchParams.get("staffId");
     const userId = searchParams.get("userId");
@@ -29,6 +33,12 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
+    const session = await auth(); // move inside function
+
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const { staffId, userId, from, text } = await req.json();
 
     if (!staffId || !userId || !from || !text) {
