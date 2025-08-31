@@ -1,10 +1,10 @@
+// app/api/auth/[...nextauth]/route.ts
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { prisma } from "@/lib/db";
-import type { NextAuthConfig } from "next-auth";
 
-export const authOptions: NextAuthConfig = {
+export default NextAuth({
   adapter: PrismaAdapter(prisma),
   providers: [
     GoogleProvider({
@@ -13,20 +13,16 @@ export const authOptions: NextAuthConfig = {
     }),
   ],
   session: {
-    strategy: "database", // use "database" or "jwt" in v5
+    strategy: "database", // "jwt" or "database" depending on your setup
   },
   pages: {
-    signIn: "/login",
+    signIn: "/login", // your login page
   },
   callbacks: {
     async session({ session, user }) {
-      session.user.id = user.id;
-      session.user.role = user.role;
+      // Add role to session.user
+      if (session.user) session.user.role = user.role;
       return session;
     },
   },
-};
-
-const handler = NextAuth(authOptions);
-
-export { handler as GET, handler as POST };
+});
