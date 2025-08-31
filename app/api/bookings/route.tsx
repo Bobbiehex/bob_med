@@ -2,11 +2,22 @@
 import { prisma } from "@/lib/db";
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
-const session = await auth();
 
+type BookingRequestBody = {
+  staffId: string;
+  staffName: string;
+  date: string; // ISO string
+  time: string; // e.g., "10:00"
+  reason: string;
+};
 
 export async function GET(req: Request) {
   try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const { searchParams } = new URL(req.url);
     const staffId = searchParams.get("staffId");
 
@@ -24,21 +35,26 @@ export async function GET(req: Request) {
 
     return NextResponse.json(bookings);
   } catch (error) {
-    console.error(error);
+    console.error("GET /api/bookings error:", error);
     return NextResponse.json({ error: "Failed to fetch bookings" }, { status: 500 });
   }
 }
 
 export async function POST(req: Request) {
   try {
-    const body = await req.json();
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const body: BookingRequestBody = await req.json();
+
     const { staffId, staffName, date, time, reason } = body;
 
     if (!staffId || !staffName || !date || !time || !reason) {
       return NextResponse.json({ error: "All fields are required" }, { status: 400 });
     }
 
-    // Check if the slot is already booked
     const existingBooking = await prisma.booking.findFirst({
       where: { staffId, date: new Date(date), time },
     });
@@ -62,7 +78,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json(newBooking, { status: 201 });
   } catch (error) {
-    console.error(error);
+    console.error("POST /api/bookings error:", error);
     return NextResponse.json({ error: "Failed to create booking" }, { status: 500 });
   }
 }
