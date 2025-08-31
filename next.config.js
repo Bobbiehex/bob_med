@@ -1,4 +1,4 @@
-import("./env.mjs");
+import "./env.mjs";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -21,8 +21,10 @@ const nextConfig = {
     ],
   },
   experimental: {
-    serverComponentsExternalPackages: ["@prisma/client"],
+    serverComponentsExternalPackages: ["@prisma/client", "next-auth"],
   },
+  // Avoid generating large Edge Functions
+  runtime: "nodejs",
 };
 
-module.exports = nextConfig;
+export default nextConfig;

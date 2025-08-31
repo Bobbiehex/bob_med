@@ -1,30 +1,28 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 
-export const authOptions = {
+const handler = NextAuth({
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
       authorization: {
         params: {
-          prompt: "consent",          // Forces account selection every time
-          access_type: "offline",     // Gets refresh token
-          response_type: "code",      // Standard OAuth code flow
+          prompt: "consent",
+          access_type: "offline",
+          response_type: "code",
         },
       },
     }),
   ],
   pages: {
-    error: "/auth/error", // custom error page (optional)
+    error: "/auth/error",
   },
   callbacks: {
     async session({ session, token }) {
-      // You can attach additional info to session here
       return session;
     },
   },
-};
+});
 
-const handler = NextAuth(authOptions);
 export { handler as GET, handler as POST };
