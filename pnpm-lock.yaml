@@ -240,6 +240,9 @@ importers:
       '@tailwindcss/typography':
         specifier: ^0.5.13
         version: 0.5.13(tailwindcss@3.4.17)
+      '@types/ms':
+        specifier: ^2.1.0
+        version: 2.1.0
       '@types/node':
         specifier: ^20.14.11
         version: 20.14.11
@@ -2417,8 +2420,8 @@ packages:
   '@types/mdx@2.0.13':
     resolution: {integrity: sha512-+OWZQfAYyio6YkJb3HLxDrvnx6SWWDbC0zVPfBRzUk0/nqoDyf6dNxQi3eArPe8rJ473nobTMQ/8Zk+LxJ+Yuw==}
 
-  '@types/ms@0.7.34':
-    resolution: {integrity: sha512-nG96G3Wp6acyAgJqGasjODb+acrI7KltPiRxzHPXnP3NgI28bpQDRv53olbqGXbfcgF5aiiHmO3xpwEpS5Ld9g==}
+  '@types/ms@2.1.0':
+    resolution: {integrity: sha512-GsCCIZDE/p3i96vtEqx+7dBUGXrc7zeSK3wwPHIaRThS+9OhWIXRqzs4d6k1SVU8g91DrNRWxWUGhp5KXQb2VA==}
 
   '@types/node@20.14.11':
     resolution: {integrity: sha512-kprQpL8MMeszbz6ojB5/tU8PLN4kesnN8Gjzw349rDlNgsSzg90lAVj3llK99Dh7JON+t9AuscPPFW6mPbTnSA==}
@@ -8280,7 +8283,7 @@ snapshots:
 
   '@types/debug@4.1.12':
     dependencies:
-      '@types/ms': 0.7.34
+      '@types/ms': 2.1.0
 
   '@types/eslint-scope@3.7.7':
     dependencies:
@@ -8316,7 +8319,7 @@ snapshots:
 
   '@types/mdx@2.0.13': {}
 
-  '@types/ms@0.7.34': {}
+  '@types/ms@2.1.0': {}
 
   '@types/node@20.14.11':
     dependencies:
