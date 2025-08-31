@@ -1,9 +1,8 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
-import type { Session } from "next-auth";
 
 export async function GET() {
-  const session: Session | null = await auth();
+  const session = await auth();
 
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
